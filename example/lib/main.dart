@@ -38,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _requestPermission();
-
   }
 
   @override
@@ -113,10 +112,12 @@ class _MyHomePageState extends State<MyHomePage> {
     RenderRepaintBoundary boundary =
         _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
-    ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png) as FutureOr<ByteData?>);
+    ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png)
+        as FutureOr<ByteData?>);
     if (byteData != null) {
-      final result =
-      await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
+      final result = await ImageGallerySaver.saveImage(
+          byteData.buffer.asUint8List(),
+          isReturnImagePathOfIOS: true);
       print(result);
       _toastInfo(result.toString());
     }
@@ -129,7 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final result = await ImageGallerySaver.saveImage(
         Uint8List.fromList(response.data),
         quality: 60,
-        name: "hello");
+        name: "hello",
+        isReturnImagePathOfIOS: true);
     print(result);
     _toastInfo("$result");
   }
@@ -140,7 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
     String fileUrl =
         "https://hyjdoc.oss-cn-beijing.aliyuncs.com/hyj-doc-flutter-demo-run.gif";
     await Dio().download(fileUrl, savePath);
-    final result = await ImageGallerySaver.saveFile(savePath);
+    final result =
+        await ImageGallerySaver.saveFile(savePath, isReturnPathOfIOS: true);
     print(result);
     _toastInfo("$result");
   }
@@ -153,7 +156,8 @@ class _MyHomePageState extends State<MyHomePage> {
     await Dio().download(fileUrl, savePath, onReceiveProgress: (count, total) {
       print((count / total * 100).toStringAsFixed(0) + "%");
     });
-    final result = await ImageGallerySaver.saveFile(savePath);
+    final result =
+        await ImageGallerySaver.saveFile(savePath, isReturnPathOfIOS: true);
     print(result);
     _toastInfo("$result");
   }
