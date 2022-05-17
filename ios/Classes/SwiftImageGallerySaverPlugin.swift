@@ -60,9 +60,10 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
                     let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: videoIds, options: nil)
                     if (assetResult.count > 0) {
                         let videoAsset = assetResult[0]
+                        
                         PHImageManager().requestAVAsset(forVideo: videoAsset, options: nil) { (avurlAsset, audioMix, info) in
                             if let urlStr = (avurlAsset as? AVURLAsset)?.url.absoluteString {
-                                self.saveResult(isSuccess: true, filePath: urlStr)
+                                self.saveResult(isSuccess: true, filePath: urlStr, localIdentifier: videoId)
                             }
                         }
                     }
@@ -97,7 +98,7 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
                             -> Bool in true }
                         imageAsset.requestContentEditingInput(with: options) { [unowned self] (contentEditingInput, info) in
                             if let urlStr = contentEditingInput?.fullSizeImageURL?.absoluteString {
-                                self.saveResult(isSuccess: true, filePath: urlStr)
+                                self.saveResult(isSuccess: true, filePath: urlStr, localIdentifier: imageId)
                             }
                         }
                     }
@@ -134,7 +135,7 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
                             -> Bool in true }
                         imageAsset.requestContentEditingInput(with: options) { [unowned self] (contentEditingInput, info) in
                             if let urlStr = contentEditingInput?.fullSizeImageURL?.absoluteString {
-                                self.saveResult(isSuccess: true, filePath: urlStr)
+                                self.saveResult(isSuccess: true, filePath: urlStr, localIdentifier: imageId)
                             }
                         }
                     }
@@ -154,11 +155,12 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
         saveResult(isSuccess: error == nil, error: error?.description)
     }
     
-    func saveResult(isSuccess: Bool, error: String? = nil, filePath: String? = nil) {
+    func saveResult(isSuccess: Bool, error: String? = nil, filePath: String? = nil, localIdentifier: String? = nil) {
         var saveResult = SaveResultModel()
         saveResult.isSuccess = error == nil
         saveResult.errorMessage = error?.description
         saveResult.filePath = filePath
+        saveResult.localIdentifier = localIdentifier
         result?(saveResult.toDic())
     }
 
@@ -179,6 +181,7 @@ public class SwiftImageGallerySaverPlugin: NSObject, FlutterPlugin {
 public struct SaveResultModel: Encodable {
     var isSuccess: Bool!
     var filePath: String?
+    var localIdentifier: String?
     var errorMessage: String?
     
     func toDic() -> [String:Any]? {
