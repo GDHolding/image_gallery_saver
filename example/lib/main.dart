@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -37,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    _requestPermission();
+    //_requestPermission();
   }
 
   @override
@@ -55,6 +56,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 200,
                   height: 200,
                   color: Colors.red,
+                  child: Center(
+                    child: Text(
+                      Random().nextInt(1000).toString(),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
               Container(
@@ -112,12 +119,11 @@ class _MyHomePageState extends State<MyHomePage> {
     RenderRepaintBoundary boundary =
         _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
-    ByteData? byteData = await (image.toByteData(format: ui.ImageByteFormat.png)
-        as FutureOr<ByteData?>);
+    ByteData? byteData =
+        await (image.toByteData(format: ui.ImageByteFormat.png));
     if (byteData != null) {
-      final result = await ImageGallerySaver.saveImage(
-          byteData.buffer.asUint8List(),
-          isReturnImagePathOfIOS: true);
+      final result =
+          await ImageGallerySaver.saveImage(byteData.buffer.asUint8List());
       print(result);
       _toastInfo(result.toString());
     }
@@ -130,8 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final result = await ImageGallerySaver.saveImage(
         Uint8List.fromList(response.data),
         quality: 60,
-        name: "hello",
-        isReturnImagePathOfIOS: true);
+        name: "hello");
     print(result);
     _toastInfo("$result");
   }
@@ -142,8 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String fileUrl =
         "https://hyjdoc.oss-cn-beijing.aliyuncs.com/hyj-doc-flutter-demo-run.gif";
     await Dio().download(fileUrl, savePath);
-    final result =
-        await ImageGallerySaver.saveFile(savePath, isReturnPathOfIOS: true);
+    final result = await ImageGallerySaver.saveFile(savePath);
     print(result);
     _toastInfo("$result");
   }
@@ -156,8 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await Dio().download(fileUrl, savePath, onReceiveProgress: (count, total) {
       print((count / total * 100).toStringAsFixed(0) + "%");
     });
-    final result =
-        await ImageGallerySaver.saveFile(savePath, isReturnPathOfIOS: true);
+    final result = await ImageGallerySaver.saveFile(savePath);
     print(result);
     _toastInfo("$result");
   }
